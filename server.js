@@ -26,7 +26,7 @@ const messagesRouter = require('./routes/messages');
 app.use('/api/messages', messagesRouter);
 
 app.get('/', (req, res) => {
-  res.send('Welcome to the IP tracking application!');
+  res.send('Sup');
 });
 
 app.get('/log-ip', async (req, res) => {
