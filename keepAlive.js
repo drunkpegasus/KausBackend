@@ -1,10 +1,9 @@
-const http = require('http');
+const https = require('https'); // Use the 'https' module for HTTPS requests
 
-const targetServiceURL = 'https://fishy.herokuapp.com'; 
+const targetServiceURL = 'https://fishy.herokuapp.com';
 
 function keepAlive() {
-
-  http.get(targetServiceURL, (res) => {
+  https.get(targetServiceURL, (res) => {
     console.log(`Pinged ${targetServiceURL}`);
   });
 }
