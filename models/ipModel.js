@@ -45,11 +45,18 @@ function extractAccessTime(formattedDate) {
   const time = timeAndDate[1].substring(0, 8);
   const dateParts = timeAndDate[0].split('-');
   const day = dateParts[2];
-  const month = dateParts[1];
+  const monthNumber = dateParts[1];
   const year = dateParts[0];
 
   // Getting the day of the week
   const dayOfWeek = getDayOfWeek(new Date(formattedDate));
+
+  // Getting the name of the month
+  const monthNames = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+  const monthName = monthNames[parseInt(monthNumber, 10) - 1];
 
   // Formatting hours to 12-hour format
   const hours = parseInt(time.substring(0, 2), 10);
@@ -60,9 +67,10 @@ function extractAccessTime(formattedDate) {
   const separator = ' | ';
 
   // Combining the required parts with separator
-  const accessTime = `${formattedHours}:${time.substring(3)} ${ampm}${separator}${day}-${month}-${year}${separator}${dayOfWeek}`;
+  const accessTime = `${formattedHours}:${time.substring(3)} ${ampm}${separator}${day}-${monthName}-${year}${separator}${dayOfWeek}`;
   return accessTime;
 }
+
 
 
 function getDayOfWeek(date) {
