@@ -8,6 +8,7 @@ const ipSchema = new mongoose.Schema({
   device: String,
   timestamp: { type: Date, default: Date.now },
   formattedTimestamp: String,
+  dayOfWeek: String, // New field for day of the week
 });
 
 ipSchema.virtual('formatted').get(function () {
@@ -21,6 +22,13 @@ ipSchema.virtual('formatted').get(function () {
     .toISOString()
     .replace(/[TZ]/g, ' ')
     .trim();
+
+  // Get day of the week
+  const dayOfWeek = indianTimestamp.toLocaleDateString('en-US', { weekday: 'long' });
+
+  // Set the new field
+  this.dayOfWeek = dayOfWeek;
+
   return formattedDate;
 });
 
