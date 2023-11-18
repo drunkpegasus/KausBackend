@@ -56,10 +56,14 @@ function extractAccessTime(formattedDate) {
   const ampm = hours >= 12 ? 'PM' : 'AM';
   const formattedHours = hours % 12 || 12;
 
-  // Combining the required parts
-  const accessTime = `${formattedHours}:${time.substring(3)} ${ampm} ${day}-${month}-${year} ${dayOfWeek}`;
+  // Define the separator
+  const separator = ' | ';
+
+  // Combining the required parts with separator
+  const accessTime = `${formattedHours}:${time.substring(3)} ${ampm}${separator}${day}-${month}-${year}${separator}${dayOfWeek}`;
   return accessTime;
 }
+
 
 function getDayOfWeek(date) {
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
