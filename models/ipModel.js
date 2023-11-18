@@ -40,7 +40,7 @@ ipSchema.pre('save', function (next) {
 });
 
 function extractAccessTime(formattedDate) {
-  // Extracting HH:MM:SS, DD, MM, YYYY, and Day from formattedDate
+  // Extracting HH:MM:SS, DD, MM, YYYY from formattedDate
   const timeAndDate = formattedDate.split(' ');
   const time = timeAndDate[1].substring(0, 8);
   const dateParts = timeAndDate[0].split('-');
@@ -48,8 +48,8 @@ function extractAccessTime(formattedDate) {
   const month = dateParts[1];
   const year = dateParts[0];
 
-  // Extracting the day of the week
-  const dayOfWeek = timeAndDate[2] || '';
+  // Getting the day of the week
+  const dayOfWeek = getDayOfWeek(new Date(formattedDate));
 
   // Formatting hours to 12-hour format
   const hours = parseInt(time.substring(0, 2), 10);
@@ -60,6 +60,12 @@ function extractAccessTime(formattedDate) {
   const accessTime = `${formattedHours}:${time.substring(3)} ${ampm} ${day}-${month}-${year} ${dayOfWeek}`;
   return accessTime;
 }
+
+function getDayOfWeek(date) {
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  return daysOfWeek[date.getDay()];
+}
+
 
 
 module.exports = mongoose.model('IP', ipSchema);
