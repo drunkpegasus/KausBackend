@@ -47,7 +47,9 @@ function extractAccessTime(formattedDate) {
   const day = dateParts[2];
   const month = dateParts[1];
   const year = dateParts[0];
-  const dayOfWeek = timeAndDate[2];
+
+  // Extracting the day of the week
+  const dayOfWeek = timeAndDate[2] || '';
 
   // Formatting hours to 12-hour format
   const hours = parseInt(time.substring(0, 2), 10);
@@ -58,5 +60,6 @@ function extractAccessTime(formattedDate) {
   const accessTime = `${formattedHours}:${time.substring(3)} ${ampm} ${day}-${month}-${year} ${dayOfWeek}`;
   return accessTime;
 }
+
 
 module.exports = mongoose.model('IP', ipSchema);
