@@ -8,7 +8,8 @@ const ipSchema = new mongoose.Schema({
   device: String,
   timestamp: { type: Date, default: Date.now },
   formattedTimestamp: String,
-  dayOfWeek: String, // New field for day of the week
+  dayOfWeek: String,
+  accessTime: String, // New field for human-readable access time
 });
 
 ipSchema.virtual('formatted').get(function () {
@@ -26,8 +27,9 @@ ipSchema.virtual('formatted').get(function () {
   // Get day of the week
   const dayOfWeek = indianTimestamp.toLocaleDateString('en-US', { weekday: 'long' });
 
-  // Set the new field
+  // Set the new fields
   this.dayOfWeek = dayOfWeek;
+  this.accessTime = extractAccessTime(formattedDate);
 
   return formattedDate;
 });
@@ -36,5 +38,25 @@ ipSchema.pre('save', function (next) {
   this.formattedTimestamp = this.formatted;
   next();
 });
+
+function extractAccessTime(formattedDate) {
+  // Extracting HH:MM:SS, DD, MM, YYYY, and Day from formattedDate
+  const timeAndDate = formattedDate.split(' ');
+  const time = timeAndDate[1].substring(0, 8);
+  const dateParts = timeAndDate[0].split('-');
+  const day = dateParts[2];
+  const month = dateParts[1];
+  const year = dateParts[0];
+  const dayOfWeek = timeAndDate[2];
+
+  // Formatting hours to 12-hour format
+  const hours = parseInt(time.substring(0, 2), 10);
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = hours % 12 || 12;
+
+  // Combining the required parts
+  const accessTime = `${formattedHours}:${time.substring(3)} ${ampm} ${day}-${month}-${year} ${dayOfWeek}`;
+  return accessTime;
+}
 
 module.exports = mongoose.model('IP', ipSchema);
