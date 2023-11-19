@@ -8,8 +8,8 @@ const ipSchema = new mongoose.Schema({
   device: String,
   timestamp: { type: Date, default: Date.now },
   formattedTimestamp: String,
-  dayOfWeek: String,
-  accessTime: String, // New field for human-readable access time
+  accessDay: String,
+  accessTime: String,
 });
 
 ipSchema.virtual('formatted').get(function () {
@@ -25,10 +25,9 @@ ipSchema.virtual('formatted').get(function () {
     .trim();
 
   // Get day of the week
-  const dayOfWeek = indianTimestamp.toLocaleDateString('en-US', { weekday: 'long' });
+  const accessDay = indianTimestamp.toLocaleDateString('en-US', { weekday: 'long' });
 
-  // Set the new fields
-  this.dayOfWeek = dayOfWeek;
+  this.accessDay = accessDay;
   this.accessTime = extractAccessTime(formattedDate);
 
   return formattedDate;
@@ -48,32 +47,28 @@ function extractAccessTime(formattedDate) {
   const monthNumber = dateParts[1];
   const year = dateParts[0];
 
-  // Getting the day of the week
-  const dayOfWeek = getDayOfWeek(new Date(formattedDate));
+  const accessDay = getaccessDay(new Date(formattedDate));
 
-  // Getting the name of the month
   const monthNames = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
   ];
   const monthName = monthNames[parseInt(monthNumber, 10) - 1];
 
-  // Formatting hours to 12-hour format
+  // Formatting to 12-hour format
   const hours = parseInt(time.substring(0, 2), 10);
   const ampm = hours >= 12 ? 'PM' : 'AM';
   const formattedHours = hours % 12 || 12;
 
-  // Define the separator
   const separator = ' | ';
 
-  // Combining the required parts with separator
-  const accessTime = `${formattedHours}:${time.substring(3)} ${ampm}${separator}${day}-${monthName}-${year}${separator}${dayOfWeek}`;
+  const accessTime = `${formattedHours}:${time.substring(3)} ${ampm}${separator}${day}-${monthName}-${year}${separator}${accessDay}`;
   return accessTime;
 }
 
 
 
-function getDayOfWeek(date) {
+function getaccessDay(date) {
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   return daysOfWeek[date.getDay()];
 }
