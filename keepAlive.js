@@ -1,4 +1,4 @@
-const https = require('https'); // Use the 'https' module for HTTPS requests
+const https = require('https');
 
 const targetServiceURL = 'https://fishy.herokuapp.com';
 
