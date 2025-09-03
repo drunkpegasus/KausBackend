@@ -11,6 +11,7 @@ const Message = require('./models/Message');
 const IPModel = require('./models/ipModel');
 
 const app = express();
+app.set('trust proxy', true);
 app.use(cors());
 
 app.use(getIP().getIpInfoMiddleware);
