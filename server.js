@@ -19,8 +19,10 @@ app.use(useragent.express());
 app.use(express.json());
 
 const mongodbUri = process.env.MONGODB_URI;
+const dbName = process.env.DB_NAME; // Database Name
 
 mongoose.connect(mongodbUri, {
+  dbName: dbName, // Database Name
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
