@@ -19,11 +19,25 @@ app.use(express.json());
 const mongodbUri = process.env.MONGODB_URI;
 const dbName = process.env.DB_NAME; // Database Name
 
-mongoose.connect(mongodbUri, {
-  dbName: dbName, // Database Name
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+// Auto-Retry MongoDB Connection Logic
+const connectWithRetry = () => {
+  console.log('Attempting to connect to MongoDB...');
+  
+  mongoose.connect(mongodbUri, {
+    dbName: dbName, // Database Name
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log('Successfully connected to MongoDB');
+  })
+  .catch(err => {
+    console.error('MongoDB connection failed. Retrying in 5 seconds...', err.message);
+    setTimeout(connectWithRetry, 5000);
+  });
+};
+
+connectWithRetry();
 
 const messagesRouter = require('./routes/messages');
 app.use('/api/messages', messagesRouter);
@@ -32,9 +46,17 @@ app.get('/', (req, res) => {
   res.send('I see you');
 });
 
-app.get('/log-ip', async (req, res) => {
-  const ip = req.ipInfo.ip;
-  const page = req.query.page;
+// Changed to POST to accept body data from frontend
+app.post('/log-ip', async (req, res) => {
+  // Extract real IP prioritizing Cloudflare headers
+  const ip = req.headers['cf-connecting-ip'] || 
+             (req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0].trim() : null) || 
+             req.ipInfo.ip || 
+             req.ip;
+
+  // Extract page from either body or query fallback, and new screen data
+  const page = req.body.page || req.query.page;
+  const { screenWidth, screenHeight } = req.body;
   const userAgent = req.useragent;
 
   try {
@@ -44,6 +66,8 @@ app.get('/log-ip', async (req, res) => {
       userAgent: userAgent.source,
       operatingSystem: userAgent.os,
       device: userAgent.isMobile ? 'Mobile' : 'Desktop',
+      screenWidth: screenWidth || null,
+      screenHeight: screenHeight || null,
     });
 
     await newIP.save();
@@ -58,6 +82,8 @@ app.get('/log-ip', async (req, res) => {
       userAgent: ipDocument.userAgent,
       operatingSystem: ipDocument.operatingSystem,
       device: ipDocument.device,
+      screenWidth: ipDocument.screenWidth,
+      screenHeight: ipDocument.screenHeight,
       timestamp: ipDocument.timestamp,
       formattedTimestamp: ipDocument.formattedTimestamp,
       __v: ipDocument.__v,

@@ -6,6 +6,8 @@ const ipSchema = new mongoose.Schema({
   userAgent: String,
   operatingSystem: String,
   device: String,
+  screenWidth: Number,   // Added field
+  screenHeight: Number,  // Added field
   timestamp: { type: Date, default: Date.now },
   formattedTimestamp: String,
   accessDay: String,
@@ -66,13 +68,9 @@ function extractAccessTime(formattedDate) {
   return accessTime;
 }
 
-
-
 function getaccessDay(date) {
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   return daysOfWeek[date.getDay()];
 }
-
-
 
 module.exports = mongoose.model('IP', ipSchema);
